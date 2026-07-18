@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carnitas Sabatinas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .hidden-section { display: none !important; }
+        .active-option { background-color: #99FF00 !important; border-color: #0B6623 !important; }
+        .error-border { border-color: #D60000 !important; }
+    </style>
+</head>
+<body class="bg-black font-sans">
+
+    <div class="flex justify-center items-center min-h-screen">
+        <div class="w-full max-w-[412px] h-screen bg-[#FFEBEB] relative shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden">
+            <div id="app" class="h-full w-full overflow-y-auto">
+                
+                <!-- SECCIÓN INICIO -->
+                <section id="inicio" class="min-h-screen p-6 flex flex-col items-center text-center bg-[linear-gradient(135deg,#FFF4D4_45%,#FFEBEB_45%)]">
+                    <div class="pt-10 flex flex-col items-center gap-6 w-full">
+                        <img src="https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&q=80&w=400" class="w-[130px] h-[130px] rounded-full border-[6px] border-[#D60000] object-cover shadow-lg" alt="Carnitas">
+                        <div class="bg-[#99FF00] text-[#0B6623] px-4 py-2 rounded-full font-bold uppercase rotate-[-2deg]">¡Tus Carnitas Sabatinas!</div>
+                        <div class="flex flex-col gap-3 w-full">
+                            <button onclick="window.open('https://wa.me/1234567890')" class="flex items-center justify-center gap-2 bg-[#D60000] text-white p-4 rounded-[22px] uppercase shadow-[0_5px_0px_#99FF00] font-bold"><i data-lucide="message-circle"></i> WhatsApp</button>
+                            <button onclick="showSection('reservar')" class="flex items-center justify-center gap-2 bg-[#D60000] text-white p-4 rounded-[22px] uppercase shadow-[0_5px_0px_#99FF00] font-bold"><i data-lucide="shopping-bag"></i> Reservación</button>
+                            <button onclick="showSection('ingredientes')" class="flex items-center justify-center gap-2 bg-[#D60000] text-white p-4 rounded-[22px] uppercase shadow-[0_5px_0px_#99FF00] font-bold"><i data-lucide="info"></i> Sobre nosotros</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN RESERVAR -->
+                <section id="reservar" class="min-h-screen p-6 bg-[#FFEBEB] hidden-section">
+                    <button onclick="showSection('inicio')" class="mb-4 text-[#0B6623]"><i data-lucide="arrow-left"></i></button>
+                    <div class="bg-[#99FF00] p-4 rounded-2xl font-black uppercase text-center shadow-[4px_4px_0px_#D60000] mb-8">¿Qué se te antoja hoy?</div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="selectProduct('Tacos', 'tacos', 'https://images.unsplash.com/photo-1599974579688-8dbdd335c77f?auto=format&fit=crop&q=80&w=400')" class="h-32 flex flex-col items-center justify-center gap-2 rounded-3xl border-4 bg-white border-[#D60000] hover:scale-105 transition-all">
+                            <span class="text-4xl">🌮</span>
+                            <span class="font-black uppercase text-sm">Tacos</span>
+                        </button>
+                        <button onclick="selectProduct('Carnes', 'carnes', 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=400')" class="h-32 flex flex-col items-center justify-center gap-2 rounded-3xl border-4 bg-white border-[#D60000] hover:scale-105 transition-all">
+                            <span class="text-4xl">🍖</span>
+                            <span class="font-black uppercase text-sm">Carnes</span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN PERSONALIZAR -->
+                <section id="detalles" class="min-h-screen p-6 bg-[#FFEBEB] hidden-section">
+                    <button onclick="showSection('reservar')" class="mb-4 text-[#0B6623]"><i data-lucide="arrow-left"></i></button>
+                    <div class="border-[5px] border-[#0B6623] rounded-[25px] overflow-hidden mb-6">
+                        <img id="prod-img" src="" class="w-full h-48 object-cover" alt="Producto">
+                    </div>
+                    
+                    <!-- Paso 1: Nombre -->
+                    <div class="mb-6">
+                        <input type="text" id="user-name" placeholder="Tu nombre..." class="w-full p-4 rounded-2xl border-2 border-[#0B6623] font-bold transition-all" oninput="checkName()">
+                        <p id="error-msg" class="text-[#D60000] text-xs font-bold mt-2 ml-2 hidden">¡Ingresa tu nombre para continuar!</p>
+                    </div>
+
+                    <!-- Paso 2: Opciones (ocultas hasta tener nombre) -->
+                    <div id="step-2" class="hidden">
+                        <p class="font-black text-[#0B6623] mb-4 uppercase text-sm">Selecciona una opción obligatoria:</p>
+                        <div id="options-container" class="grid grid-cols-1 gap-3 mb-8"></div>
+                        
+                        <!-- Paso 3: Botón de pedido (oculto hasta elegir opción) -->
+                        <button id="order-btn" onclick="handleOrder()" class="hidden w-full bg-[#D60000] text-white p-5 rounded-[22px] font-black uppercase shadow-[0_6px_0px_#0B6623] text-xl">Pedir Ahora</button>
+                    </div>
+                </section>
+
+                <!-- SECCIÓN SOBRE NOSOTROS -->
+                <section id="ingredientes" class="min-h-screen p-6 bg-white hidden-section">
+                    <button onclick="showSection('inicio')" class="mb-4 text-[#0B6623]"><i data-lucide="arrow-left"></i></button>
+                    <div class="text-[#D60000] text-[1.5rem] font-black uppercase text-center mt-10">Carnitas Sabatinas</div>
+                    <div class="border-[5px] border-[#0B6623] rounded-[25px] overflow-hidden mt-6">
+                        <img src="https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&q=80&w=500" class="w-full" alt="Carnitas">
+                    </div>
+                    <p class="mt-6 text-gray-700 leading-relaxed text-center font-medium">Preparadas con amor desde la madrugada. ¡Sabor auténtico mexicano en cada bocado!</p>
+                    
+                    <div class="mt-8 flex flex-col gap-4">
+                        <a href="https://maps.google.com" target="_blank" class="flex items-center gap-3 bg-gray-100 p-4 rounded-2xl border-2 border-gray-300 font-bold text-gray-800">
+                            <i data-lucide="map-pin" class="text-[#D60000]"></i> Ver ubicación en Maps
+                        </a>
+                        <a href="https://instagram.com" target="_blank" class="flex items-center gap-3 bg-gray-100 p-4 rounded-2xl border-2 border-gray-300 font-bold text-gray-800">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#D60000]"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                            Síguenos en Instagram
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let currentProduct = null;
+        let selectedOption = "";
+
+        const customizationOptions = {
+            tacos: ['Con todo', 'Solo cebolla y cilantro', 'Con aguacate', 'Extra carne'],
+            carnes: ['Término medio', 'Bien cocida', 'Con arepa', 'Con papa salada']
+        };
+
+        function showSection(id) {
+            document.querySelectorAll('#app > section').forEach(s => s.classList.add('hidden-section'));
+            document.getElementById(id).classList.remove('hidden-section');
+            lucide.createIcons();
+        }
+
+        function checkName() {
+            const name = document.getElementById('user-name').value.trim();
+            const step2 = document.getElementById('step-2');
+            const errorMsg = document.getElementById('error-msg');
+            
+            if (name.length > 0) {
+                step2.classList.remove('hidden');
+                errorMsg.classList.add('hidden');
+                document.getElementById('user-name').classList.remove('error-border');
+            } else {
+                step2.classList.add('hidden');
+            }
+        }
+
+        function selectProduct(label, id, img) {
+            currentProduct = { label, id };
+            selectedOption = "";
+            document.getElementById('user-name').value = "";
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('order-btn').classList.add('hidden');
+            document.getElementById('prod-img').src = img;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            customizationOptions[id].forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 rounded-xl border-2 font-bold bg-white border-gray-300 transition-colors";
+                btn.innerText = opt;
+                btn.onclick = () => {
+                    selectedOption = opt;
+                    document.querySelectorAll('#options-container button').forEach(b => b.classList.remove('active-option'));
+                    btn.classList.add('active-option');
+                    document.getElementById('order-btn').classList.remove('hidden');
+                };
+                container.appendChild(btn);
+            });
+            showSection('detalles');
+        }
+
+        function handleOrder() {
+            const nombre = document.getElementById('user-name').value.trim();
+            if (!nombre) {
+                document.getElementById('error-msg').classList.remove('hidden');
+                document.getElementById('user-name').classList.add('error-border');
+                return;
+            }
+            const msg = `¡Hola! Me gustaría hacer un pedido.%0A%0A👤 *Cliente:* ${nombre}%0A📦 *Producto:* ${currentProduct.label}%0A⚙️ *Extras:* ${selectedOption}`;
+            window.open(`https://wa.me/1234567890?text=${msg}`, '_blank');
+        }
+    </script>
+</body>
+</html>
